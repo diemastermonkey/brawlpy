@@ -12,6 +12,7 @@
 # Weapons fist herring staff sword crossbow magic warhammer
 # ---------------------------------------------------------
 import random;        # For prng
+# import math;          # For floor
 import sys;           # Merely for sys.argv/self. Can be rid?
 import re;            # Regex
 
@@ -37,13 +38,11 @@ class BrawlerType:
     print (self.fnName(), "\t Seed", self.iSeed);
     print ("  Wields", Weapons[self.fnWeapon()]);
     print ("  HP\t", self.fnHP());
-    for sAttribute in aAttributes:         # Iterate attribtes
+    print ("  AC\t", self.fnAC());
+    for sAttribute in aAttributes:           # Iterate attribtes
       print (" ", sAttribute, "\t", self.fnAttribute(sAttribute));
 
     return
-
-  def fnHP (self):                         # Initial HP = Str + Con * 2
-    return (self.fnAttribute("STR") + self.fnAttribute("CON") * 2)
 
   def fnName (self):                         # Procgen name from glob sNames
     random.seed(self.iSeed)
@@ -58,7 +57,17 @@ class BrawlerType:
   def fnAttribute (self, argAttribute):
     iAttribIndex = aAttributes.index(argAttribute);
     random.seed (self.iSeed + 3 * iAttribIndex); # Unique seed, each
-    return (random.randint (8, 18));
+    return (random.randint (5, 20));
+
+  # Base HP (simplified - to do: consult DMG)
+  def fnHP (self):                           # Initial HP = Str+Con*2
+    return (self.fnAttribute("STR") + self.fnAttribute("CON") * 2)
+
+  # Base Armor Class - see Basic Rules p. 9
+  # NOTE: *NOT* Correct atm, see 
+  #   https://roll20.net/compendium/dnd5e/Ability%20Scores#content
+  def fnAC (self):
+    return(int(self.fnAttribute ("DEX") - 10 / 2));
 
 # End Brawler class
 
