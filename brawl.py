@@ -13,11 +13,13 @@
 # ---------------------------------------------------------
 import random;        # For prng
 # import math;          # For floor
+import time;
 import sys;           # Merely for sys.argv/self. Can be rid?
 import re;            # Regex
 
 # Simple string array of attribute mnemonics
 aAttributes = ("STR", "DEX", "CON", "INT", "WIS", "CHA");
+aActions    = ("Attack", "Defend", "Hide");
 sSource = ""          # For embedded data
 
 # Brawler class
@@ -35,21 +37,23 @@ class BrawlerType:
     return
 
   def fnDump (self):
-    print (self.fnName(), "\t Seed", self.iSeed);
+    print ("  Name\t", self.fnName(), " Seed", self.iSeed);
     print ("  Wields", Weapons[self.fnWeapon()]);
     print ("  HP\t", self.fnHP());
     print ("  AC\t", self.fnAC());
     for sAttribute in aAttributes:           # Iterate attribtes
       print (" ", sAttribute, "\t", self.fnAttribute(sAttribute));
 
+    print ("  Action", self.fnAction());
+
     return
 
   def fnName (self):                         # Procgen name from glob sNames
-    random.seed(self.iSeed)
+    random.seed (self.iSeed)
     return "".join(random.sample(Names, 3))  # Python, pfft
 
   def fnWeapon (self):                       # Procgen weapon from glob sWeapons
-    random.seed(self.iSeed)
+    random.seed (self.iSeed)
     return random.randint(0, len(Weapons)-1) # Returns an *index*
 
   # Procgen DND attribute lte 18, by mnemonic string
@@ -68,6 +72,16 @@ class BrawlerType:
   #   https://roll20.net/compendium/dnd5e/Ability%20Scores#content
   def fnAC (self):
     return(int(self.fnAttribute ("DEX") - 10 / 2));
+
+  # Action Seed: A seed to use w/PRNG to procgen action sets at a time
+  def fnActionSeed (self):
+    random.seed (self.iSeed + 4096);         # Just so its different 
+    return (random.randint (0,65535));       # Big domain
+
+  # Returns action based on action seed and clocked curve
+  # STILL IN PROGRESS
+  def fnAction (self):
+    return (int(time.time()));     # DEBUG
 
 # End Brawler class
 
